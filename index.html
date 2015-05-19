@@ -1,0 +1,198 @@
+<!DOCTYPE html><html><head><title></title><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" /><style type='text/css'>
+body {
+  font-family:'Helvetica';
+  letter-spacing:-5px;
+  background:#C3C3C3;
+  background-size:100%;
+  color:#000;
+  margin:0;
+  padding:0;
+  font-weight:bold;
+}
+
+body.other {
+  font-family:'Helvetica';
+  text-align: right;
+  letter-spacing:-5px;
+  background:#C3C3C3;
+  background-size:75%;
+  background-repeat: repeat;
+  color:#fff;
+  margin:0;
+  padding:0;
+  font-weight:bold;
+}
+
+body.another {
+  font-family:'Helvetica';
+  text-align: right;
+  letter-spacing:-5px;
+  background:#C3C3C3;
+  background-size:44%;
+  background-repeat: repeat;
+  color:#fff;
+  margin:0;
+  padding:0;
+  font-weight:bold;
+}
+
+h1, h2, h3, p {
+  margin:0;
+}
+
+em, a {
+  font-style:normal;
+  color:#CD5130;
+}
+
+a {
+  background:#456C9E;
+  color:#000;
+  text-decoration:none;
+}
+
+img {
+  width:100%;
+}
+
+div {
+  cursor:pointer;
+  cursor:hand;
+  position:absolute;
+  top:0px;
+  left:0px;
+  padding:75px;
+  line-height:97%;
+}
+
+div.center {
+  text-align:center;
+}
+
+div.imageText {
+  text-shadow:0px 0px 5px rgba(0,0,0,0.2);
+}
+
+notes {
+    display:none;
+}
+
+@-webkit-keyframes blinker {
+  from { opacity: 1.0; }
+  to { opacity: 0.5; }
+}
+.blink {
+  -webkit-animation-name: blinker;
+  -webkit-animation-iteration-count: infinite;
+  -webkit-animation-timing-function: cubic-bezier(1.0,0,0,1.0);
+  -webkit-animation-duration: 800ms;
+}
+</style><script type='text/javascript'>
+window.onload = function() {
+    var s = document.getElementsByTagName('div'), ti;
+    if (!s) return;
+    var big = { current: 0, forward: fwd, reverse: rev, go: go, length: s.length };
+    window.big = big;
+    function resize() {
+        var w = window.innerWidth, h = window.innerHeight, e = s[big.current];
+        e.style.fontSize = h + 'px';
+        for (var i = h - 2; e.offsetWidth > w || e.offsetHeight > h; i -= 2) {
+            e.style.fontSize = i + 'px';
+        }
+        e.style.marginTop = ((h - e.offsetHeight) / 2) + 'px';
+    }
+    function go(n) {
+        big.current = n;
+        var e = s[n], t = parseInt(e.getAttribute('data-timeToNext') || 0, 10),
+            notes = e.getElementsByTagName('notes');
+        document.body.className = e.getAttribute('data-bodyclass') || '';
+        for (var k = 0; k < s.length; k++) s[k].style.display = 'none';
+        e.style.display = 'inline';
+        for (k = 0; typeof console === 'object' && k < notes.length; k++) console.log('%c%s: %s', 'padding:5px;font-family:serif;font-size:18px;line-height:150%;', n, notes[k].innerHTML.trim());
+        if (e.firstChild && e.firstChild.nodeName === 'IMG') {
+            document.body.style.backgroundImage = 'url("' + e.firstChild.src + '")';
+            e.firstChild.style.display = 'none';
+            if ('classList' in e) e.classList.add('imageText');
+        } else {
+            document.body.style.backgroundImage = '';
+            document.body.style.backgroundColor = e.style.backgroundColor;
+        }
+        if (ti !== undefined) window.clearInterval(ti);
+        if (t > 0) ti = window.setTimeout(fwd, (t * 1000));
+        resize();
+        if (window.location.hash !== n) window.location.hash = n;
+        document.title = e.textContent || e.innerText;
+    }
+    document.onclick = function() { go(++big.current % (s.length)); };
+    function fwd() { go(Math.min(s.length - 1, ++big.current)); }
+    function rev() { go(Math.max(0, --big.current)); }
+    document.onkeydown = function(e) {
+        if (e.which === 39 || e.which === 34 || e.which === 40) fwd();
+        if (e.which === 37 || e.which === 33 || e.which === 38) rev();
+    };
+    document.ontouchstart = function(e) {
+        var x0 = e.changedTouches[0].pageX;
+        document.ontouchend = function(e2) {
+            var x1 = e2.changedTouches[0].pageX;
+            if (x1 - x0 < 0) fwd();
+            if (x1 - x0 > 0) rev();
+        };
+    };
+    function parse_hash() {
+        return Math.max(Math.min(s.length - 1,
+            parseInt(window.location.hash.substring(1), 10)), 0);
+    }
+    if (window.location.hash) big.current = parse_hash() || big.current;
+    window.onhashchange = function() {
+        var c = parse_hash();
+        if (c !== big.current) go(c);
+    };
+    window.onresize = resize;
+    go(big.current);
+};
+</script></head><body>
+<div>get OSM data with <em>overpass turbo</em></div>
+<div data-bodyclass="another" class="blink"><img src="overpass.jpg"/>overpass <em>turbo</em></div>
+<div>prepared for<em>:</em> <small><a href="http://slogisug.org/">SLO GIS Users Group</a></small> 19 May 2015</div>
+<div>by <a href="http://joelarson.com">Joe Larson</a>, a map<em>/</em>data<em>/</em>tech person</div>
+<div><a href="http://overpass-turbo.eu/">overpass turbo</a>, a web-based data filtering tool for <em>OpenStreetMap</em>.</div>
+<div><img src="Openstreetmap_logo.svg"/></div>
+<div><em>"</em>With overpass turbo you can run <a href="http://wiki.openstreetmap.org/wiki/Overpass_API"> Overpass API</a> queries and analyse the resulting OSM data interactively on a map.<br/><br/>There is an integrated <a href="http://wiki.openstreetmap.org/wiki/Overpass_turbo/Wizard">Wizard</a> which makes creating queries super easy.<em>"</em></div>
+<div><em>powered by</em><img src="overpass-logo.png"/></div>
+<div>integrated <em>wizard</em><br/><br/><img src="wizard.jpg"/></div>
+<div data-bodyclass="other"><img src="look.jpg"/>Let<em>'</em>s take a look<em>!</em></div>
+<div><img src="ot.png"/></div>
+<div><img src="ot-run.png"/></div>
+<div><img src="ot-run-info.png"></div>
+<div><img src="osm-info.png"/></div>
+<div>the easy way<em>..</em>use the wizard<em>!</em></div>
+<div><img src="wiz.gif"/></div>
+<div><img src="ot-wiz.png"></div>
+<div><img src="ot-wiz-out.png"></div>
+<div>is there a <em>faster</em> way to determine all churches in an area<em>?</em></div>
+<div>another way<em>..</em>lookup on <a href="http://wiki.openstreetmap.org/wiki/Main_Page">wiki.osm.org</a></div>
+<div><img src="wiki.gif"/></div>
+<div>How to <em>share</em>.</div>
+<div><img src="ot-share.png"></div>
+<div>Get images <em>or </em>maps<em>.</em></div>
+<div><img src="ot-export.png"></div>
+<div><img src="ot-export-maps.png"></div>
+<div>Get the <em>data</em>.</div>
+<div><img src="ot-export-data.png"></div>
+<div><img src="ot-gist.png"></div>
+<div><img src="ot-geojsonio.png"></div>
+<div><span style="font-size:0.5em"><em>overpass turbo</em></span> exports to <a href="https://github.com/mapbox/geojson.io">geojson.io</a><em>..</em>A fast, simple editor for map data.</div>
+<div><img src="geojsonio.gif"/></div>
+<div><span style="font-size:0.5em"><em>overpass turbo</em></span> exports to <a href="https://josm.openstreetmap.de/">JOSM</a><em>..</em>an extensible editor for ​OpenStreetMap</div>
+<div><img src="josm.gif"/></div>
+<div>other ways to download <em>OSM</em>:</div>
+<div>-<a href="http://download.geofabrik.de/">Geofabrik</a><br/><br/>-<a href="http://www.weogeo.com/data/OpenStreetMap_Data.html">WeoGeo</a><br/><br/>-<a href="https://mapzen.com/metro-extracts/">metro extracts</a><br/><br/>-<em>more</em></div>
+<div>for large extracts I <em>use</em> <a href="http://wiki.openstreetmap.org/wiki/Overpass_API">Overpass API</a> <em>instead</em>.</div>
+<div><span style="font-size:0.5em"><em>example</em>: SLO <a href="https://github.com/SLUGIS/OSM-Buildings">Countywide buildings</a> extract.</div>
+<div>use cases<em>:</em></div>
+<div>mountain bike tracks <em>→</em> GPS<br/><br/>building footprints <em>→</em> Google Earth<br/><br/>vineyard landuse areas <em>→</em> your .fav format</div>
+<div><a href="http://overpass-turbo.eu/">overpass turbo</a><em>:</em> a simple & great tool for extracting from OSM<em>.</em></div>
+<div><img src="fun.gif"/>have fun<br/><br/><br/></div>
+<div>questions<em>?</em></div>
+<div data-bodyclass="other"><img src="sloverpass.jpg"/><em>end</em><br/><br/><br/></div>
+<div>image credits<em>: </em><br/><br/>-<a href="https://www.flickr.com/photos/decade_null/3160909539/">overpass</a><br/>-<a href="http://en.wikipedia.org/wiki/OpenStreetMap#/media/File:Openstreetmap_logo.svg">OSM logo</a><br/>-the internet<br/>-me</div>
